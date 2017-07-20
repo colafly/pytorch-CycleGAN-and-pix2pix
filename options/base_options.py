@@ -2,6 +2,9 @@ import argparse
 import os
 from util import util
 import torch
+from tinyenv import flags
+
+FLAGS = flags()
 
 class BaseOptions():
     def __init__(self):
@@ -9,7 +12,7 @@ class BaseOptions():
         self.initialized = False
 
     def initialize(self):
-        self.parser.add_argument('--dataroot', required=True, help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
+        self.parser.add_argument('--dataroot', default=FLAGS.input_dir + '/horse2zebra', help='path to images (should have subfolders trainA, trainB, valA, valB, etc)')
         self.parser.add_argument('--batchSize', type=int, default=1, help='input batch size')
         self.parser.add_argument('--loadSize', type=int, default=286, help='scale images to this size')
         self.parser.add_argument('--fineSize', type=int, default=256, help='then crop to this size')
@@ -54,7 +57,7 @@ class BaseOptions():
             id = int(str_id)
             if id >= 0:
                 self.opt.gpu_ids.append(id)
-        
+
         # set gpu ids
         if len(self.opt.gpu_ids) > 0:
             torch.cuda.set_device(self.opt.gpu_ids[0])
