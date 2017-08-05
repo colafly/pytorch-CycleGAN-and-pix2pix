@@ -3,12 +3,14 @@ from options.train_options import TrainOptions
 from data.data_loader import CreateDataLoader
 from models.models import create_model
 from zipfile import ZipFile
-from tinyenv import flags
+from tinyenv.flags import flags
+from os import listdir
 
 FLAGS = flags()
 
-z = ZipFile(FLAGS.input_dir + '/horse2zebra.zip')
-z.extractall(FLAGS.input_dir)
+z = ZipFile(FLAGS.dataroot + '/grizzlypanda.zip')
+z.extractall(FLAGS.dataroot)
+print(listdir(FLAGS.dataroot))
 
 opt = TrainOptions().parse()
 data_loader = CreateDataLoader(opt)
@@ -20,7 +22,7 @@ model = create_model(opt)
 
 total_steps = 0
 
-for epoch in range(1, opt.niter + opt.niter_decay + 1):
+for epoch in range(1, opt.iterations + opt.niter_decay + 1):
     epoch_start_time = time.time()
     for i, data in enumerate(dataset):
         iter_start_time = time.time()
@@ -32,7 +34,6 @@ for epoch in range(1, opt.niter + opt.niter_decay + 1):
         if total_steps % opt.print_freq == 0:
             errors = model.get_current_errors()
             t = (time.time() - iter_start_time) / opt.batchSize
-            visualizer.print_current_errors(epoch, epoch_iter, errors, t)
             if opt.display_id > 0:
                 print(epoch, float(epoch_iter)/dataset_size)
 
@@ -48,7 +49,7 @@ for epoch in range(1, opt.niter + opt.niter_decay + 1):
         model.save(epoch)
 
     print('End of epoch %d / %d \t Time Taken: %d sec' %
-          (epoch, opt.niter + opt.niter_decay, time.time() - epoch_start_time))
+          (epoch, opt.iterations + opt.niter_decay, time.time() - epoch_start_time))
 
-    if epoch > opt.niter:
+    if epoch > opt.iterations:
         model.update_learning_rate()
