@@ -8,7 +8,7 @@ from os import listdir
 
 FLAGS = flags()
 
-z = ZipFile(FLAGS.dataroot + '/grizzlypanda.zip')
+z = ZipFile(FLAGS.dataroot +  FLAGS.dataset_name_zip)
 z.extractall(FLAGS.dataroot)
 print(listdir(FLAGS.dataroot))
 
